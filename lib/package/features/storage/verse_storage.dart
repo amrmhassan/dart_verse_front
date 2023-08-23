@@ -1,6 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:frontend/package/constants/header_fields.dart';
@@ -53,14 +52,15 @@ class _VerseStorageExecuter {
     var res = await dio.post(
       url,
       data: file.readAsBytesSync(),
-      options: Options(headers: headers),
+      options:
+          Options(headers: headers, contentType: ContentType.binary.mimeType),
     );
     ExceptionTransformer.storageException(
       res,
       bucketName: bucketName,
       fileRef: ref,
     );
-    var body = json.decode(res.data);
+    var body = res.data as Map<String, dynamic>;
     String data = body['data'];
     return data;
   }
