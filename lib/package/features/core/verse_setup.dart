@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:frontend/package/errors/models/app_exceptions.dart';
 import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 import '../../constants/header_fields.dart';
@@ -56,7 +57,7 @@ class VerseSetup {
     if (!checkServer) return;
     try {
       await dio.get(
-        baseUrl,
+        baseUrl + EndpointsConstants.serverAlive,
       );
       finished = true;
     } catch (e) {
