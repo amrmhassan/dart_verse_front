@@ -33,6 +33,8 @@ class VerseSetup {
 
   Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
+    //? here ensure you initialize all dio stuff
+    _initDio();
 
     _userStreamController = StreamController<User?>();
     _tempDir = await path_provider.getApplicationDocumentsDirectory();
@@ -43,6 +45,12 @@ class VerseSetup {
     await _writeBaseUrl();
     await _writeAppId();
     await _loadUser();
+  }
+
+  void _initDio() async {
+    if (appId != null) {
+      dio.options.headers[HeaderFields.appId] = appId;
+    }
   }
 
   Future<void> _validateBaseUrl() async {
