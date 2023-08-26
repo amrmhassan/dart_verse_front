@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:frontend/package/constants/header_fields.dart';
+import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/errors/models/app_exceptions.dart';
 import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/package/features/auth/user_controller.dart';
 import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-
-import '../../constants/header_fields.dart';
-import '../auth/user_controller.dart';
 
 late Directory _tempDir;
 late StreamController<User?> _userStreamController;
 const Duration _urlBaseConnectTimeoutDefault = Duration(seconds: 5);
-Dio dio = Dio();
 
 class VerseSetup {
   final String baseUrl;

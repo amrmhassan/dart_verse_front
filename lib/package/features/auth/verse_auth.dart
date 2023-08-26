@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/constants/body_fields.dart';
 import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/errors/models/auth_exception.dart';

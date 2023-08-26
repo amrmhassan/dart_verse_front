@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/errors/models/storage_exceptions.dart';
+import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
 import 'package:frontend/package/features/utils/exception_transformer.dart';
 import 'package:frontend/package/features/utils/string_utils.dart';
 import 'package:frontend/package/utils/header_utils.dart';
-
-import '../core/verse_setup.dart';
+import 'package:frontend/package/constants/runtime_variables.dart';
 
 class VerseStorage {
   static _VerseStorageExecuter get instance {
