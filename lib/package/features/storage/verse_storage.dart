@@ -6,6 +6,8 @@ import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/errors/models/storage_exceptions.dart';
 import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
+import 'package:frontend/package/features/storage/constants/storage_constants.dart';
+import 'package:frontend/package/features/storage/utils/upload_file_utils.dart';
 import 'package:frontend/package/features/utils/exception_transformer.dart';
 import 'package:frontend/package/features/utils/string_utils.dart';
 import 'package:frontend/package/utils/header_utils.dart';
@@ -26,7 +28,7 @@ class _VerseStorageExecuter {
     File file, {
     String? bucketName,
     String? ref,
-    bool force = false,
+    FileExistReaction? onFileExist,
   }) async {
     if (!file.existsSync()) {
       throw FileNotFound(file.path);
@@ -47,7 +49,11 @@ class _VerseStorageExecuter {
       headers[HeaderFields.ref] = ref;
     }
     // adding the normal headers
-    headers[HeaderFields.force] = force.toString();
+    String? onFileExistReaction = UploadFileUtils.mapException(onFileExist);
+    if (onFileExistReaction != null) {
+      headers[HeaderFields.onFileExist] = onFileExistReaction;
+    }
+
     headers = VerseSetup.attachAuthHeaders(headers);
     var res = await dio.post(
       url,

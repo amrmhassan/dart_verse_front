@@ -8,5 +8,5 @@ class HeaderFields {
   static const String ref = 'ref';
   static const String fileName = 'fileName';
   static const String disposition = 'content-disposition';
-  static const String force = 'force';
+  static const String onFileExist = 'onFileExist';
 }
