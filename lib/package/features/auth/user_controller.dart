@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:frontend/package/constants/setup_constants.dart';
 import 'package:frontend/package/errors/models/auth_exception.dart';
 import 'package:frontend/package/features/auth/models/user_model.dart';
-import 'package:frontend/package/features/core/models/setup_model.dart';
 import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:hive/hive.dart';
 

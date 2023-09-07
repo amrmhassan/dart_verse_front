@@ -1,3 +1,5 @@
+import 'package:frontend/package/features/auth/models/user_model.dart';
+import 'package:frontend/package/features/core/models/setup_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveInitiator {
@@ -7,6 +9,7 @@ class HiveInitiator {
   }
 
   Future<void> _registerAdapters() async {
-    // Hive.registerAdapter(CartItemModelAdapter()); //=>0
+    Hive.registerAdapter(VerseUserAdapter()); //=>0
+    Hive.registerAdapter(SetupModelAdapter()); //=>1
   }
 }
