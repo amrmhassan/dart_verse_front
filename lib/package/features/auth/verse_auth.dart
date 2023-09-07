@@ -8,6 +8,7 @@ import 'package:frontend/package/constants/body_fields.dart';
 import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/errors/models/auth_exception.dart';
 import 'package:frontend/package/features/auth/auth_utils.dart';
+import 'package:frontend/package/features/auth/models/user_model.dart';
 import 'package:frontend/package/features/auth/user_controller.dart';
 import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:frontend/package/features/endpoints/impl/default_auth_endpoints.dart';
@@ -24,7 +25,7 @@ class VerseAuth {
 class _VerseAuthExecuter {
   final VerseSetup _verseSetup;
   late AuthEndpoints _authEndpoints;
-  UserController get _userController => UserController(VerseSetup.dataDir.path);
+  UserController get _userController => UserController(VerseSetup.setupBox);
 
   _VerseAuthExecuter(
     this._verseSetup, {
@@ -33,7 +34,7 @@ class _VerseAuthExecuter {
     _authEndpoints = authEndpoints ?? DefaultAuthEndpoints();
   }
 
-  Future<User> registerEmailPassword({
+  Future<VerseUser> registerEmailPassword({
     required String email,
     required String password,
     Map<String, dynamic>? userData,
@@ -65,7 +66,7 @@ class _VerseAuthExecuter {
     // then send an update to the auth service stream with the new user changes
   }
 
-  Future<User> _afterAuth(Response response, String email) async {
+  Future<VerseUser> _afterAuth(Response response, String email) async {
     int? code = response.statusCode;
     var resBody = json.decode(response.data);
     if (code != 200) {
@@ -91,7 +92,7 @@ class _VerseAuthExecuter {
     return user;
   }
 
-  Future<User> loginEmailPassword({
+  Future<VerseUser> loginEmailPassword({
     required String email,
     required String password,
   }) async {
@@ -135,12 +136,12 @@ class _VerseAuthExecuter {
     return _userController.logout();
   }
 
-  User? get currentUser {
+  VerseUser? get currentUser {
     // here just reload the user from the user controller
     return _userController.currentUser();
   }
 
-  Stream<User?> get userChanges => _userController.userChanges();
+  Stream<VerseUser?> get userChanges => _userController.userChanges();
 
   bool get userLoggedIn => _userController.currentUser() != null;
 }

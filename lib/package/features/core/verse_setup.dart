@@ -1,19 +1,21 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/errors/models/app_exceptions.dart';
 import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/package/features/auth/models/user_model.dart';
 import 'package:frontend/package/features/auth/user_controller.dart';
+import 'package:frontend/package/features/core/models/setup_model.dart';
 import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
+import 'package:frontend/package/helpers/hive/hive_helper.dart';
 import 'package:frontend/package/helpers/hive/hive_initiator.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:hive/hive.dart';
 
-late Directory _tempDir;
-late StreamController<User?> _userStreamController;
+late StreamController<VerseUser?> _userStreamController;
 const Duration _urlBaseConnectTimeoutDefault = Duration(seconds: 5);
+late Box _setUpBox;
+late SetupModel _setupModel;
 
 class VerseSetup {
   final String baseUrl;
@@ -28,23 +30,21 @@ class VerseSetup {
     Duration baseUrlConnectTimeout = _urlBaseConnectTimeoutDefault,
   }) : _baseUrlConnectTimeout = baseUrlConnectTimeout;
 
-  static Directory get dataDir => _tempDir;
-
   Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
     await HiveInitiator().setup();
+    _setUpBox = await HiveBox.setup;
+    _setupModel = SetupModel(baseUrl: baseUrl, appId: appId);
     //? here ensure you initialize all dio stuff
 
     _initDio();
 
-    _userStreamController = StreamController<User?>();
-    _tempDir = await path_provider.getApplicationDocumentsDirectory();
+    _userStreamController = StreamController<VerseUser?>();
     //! reload the user on every initialization & make it optional
     // first check if the baseUrl is a live
     await _validateBaseUrl();
 
-    await _writeBaseUrl();
-    await _writeAppId();
+    await _saveSetupModel();
     await _loadUser();
   }
 
@@ -74,46 +74,28 @@ class VerseSetup {
     }
   }
 
-  Future<void> _writeBaseUrl() async {
-    String baseUrlPath = '${_tempDir.path}/${DataFiles.baseUrl}';
-    File baseUrlFile = File(baseUrlPath);
-    await baseUrlFile.writeAsString(baseUrl);
-  }
-
-  Future<void> _writeAppId() async {
-    if (appId == null) return;
-    String appIdPath = '${_tempDir.path}/${DataFiles.appId}';
-    File appIdFile = File(appIdPath);
-    await appIdFile.writeAsString(appId!);
+  Future<void> _saveSetupModel() async {
+    await _setUpBox.put(SetupConstants.setup, _setupModel);
   }
 
   static VerseSetup get instance {
-    String baseUrlPath = '${_tempDir.path}/${DataFiles.baseUrl}';
-    String appIdPath = '${_tempDir.path}/${DataFiles.appId}';
-    File baseUrlFile = File(baseUrlPath);
-    File appIdFile = File(appIdPath);
-    String? appId;
-
-    if (!baseUrlFile.existsSync()) {
+    var setUp = _setUpBox.get(SetupConstants.setup) as SetupModel?;
+    if (setUp == null) {
       throw VerseNotInitializedException();
     }
-    if (appIdFile.existsSync()) {
-      appId = appIdFile.readAsStringSync();
-    }
-    String baseUrl = baseUrlFile.readAsStringSync();
 
     return VerseSetup(
-      baseUrl: baseUrl,
-      appId: appId,
+      baseUrl: setUp.baseUrl,
+      appId: setUp.appId,
     );
   }
 
   Future<void> _loadUser() async {
-    User? user = UserController(_tempDir.path).currentUser();
+    VerseUser? user = UserController(_setUpBox).currentUser();
     _userStreamController.add(user);
   }
 
-  static StreamController<User?> get userStreamController =>
+  static StreamController<VerseUser?> get userStreamController =>
       _userStreamController;
 
   /// this will attach app id and authorization headers
@@ -126,13 +108,10 @@ class VerseSetup {
     if (verseSetup.appId != null) {
       headers[HeaderFields.appId] = verseSetup.appId!;
     }
-    String? jwt = UserController(_tempDir.path).userJWT();
+    String? jwt = UserController(_setUpBox).userJWT();
 
     return AuthUtils.attachAuthHeader(jwt, headers);
   }
-}
 
-class DataFiles {
-  static const String baseUrl = 'baseUrl';
-  static const String appId = 'appId';
+  static Box get setupBox => _setUpBox;
 }
