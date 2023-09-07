@@ -8,6 +8,7 @@ import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/package/features/auth/user_controller.dart';
 import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
+import 'package:frontend/package/helpers/hive/hive_initiator.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 late Directory _tempDir;
@@ -31,7 +32,9 @@ class VerseSetup {
 
   Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
+    await HiveInitiator().setup();
     //? here ensure you initialize all dio stuff
+
     _initDio();
 
     _userStreamController = StreamController<User?>();

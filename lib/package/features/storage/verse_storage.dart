@@ -29,6 +29,7 @@ class _VerseStorageExecuter {
     String? bucketName,
     String? ref,
     FileExistReaction? onFileExist,
+    String? fileName,
   }) async {
     if (!file.existsSync()) {
       throw FileNotFound(file.path);
@@ -52,6 +53,9 @@ class _VerseStorageExecuter {
     String? onFileExistReaction = UploadFileUtils.mapException(onFileExist);
     if (onFileExistReaction != null) {
       headers[HeaderFields.onFileExist] = onFileExistReaction;
+    }
+    if (fileName != null) {
+      headers[HeaderFields.fileName] = fileName;
     }
 
     headers = VerseSetup.attachAuthHeaders(headers);

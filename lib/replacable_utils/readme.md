@@ -1,1 +1,0 @@
-this folder is to mak fast tasks that are made easily with packages but due to my offline status i made a fast solution for it
