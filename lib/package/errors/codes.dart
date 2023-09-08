@@ -12,4 +12,6 @@ class ExceptionsCodes {
   static const String fileNotFound = 'file-not-found';
   static const String fileNotFoundOnBucket = 'file-not-found-on-bucket';
   static const String fileAlreadyDownloaded = 'file-already-downloaded';
+  //? app check
+  static const String secretKeysNull = 'secret-keys-null';
 }

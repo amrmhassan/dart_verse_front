@@ -9,4 +9,6 @@ class HeaderFields {
   static const String fileName = 'fileName';
   static const String disposition = 'content-disposition';
   static const String onFileExist = 'onFileExist';
+  // app check
+  static const String apiHash = 'apiHash';
 }

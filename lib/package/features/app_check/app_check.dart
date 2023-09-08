@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:frontend/package/errors/models/app_check_error.dart';
 import 'package:frontend/package/features/app_check/datasoueces/api_encoder.dart';
 import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:frontend/package/features/services/verse_services.dart';
@@ -11,12 +12,13 @@ class AppCheck {
 }
 
 class _AppCheckExecuter {
-  Future<String?> getApiHash(String? apiKey) async {
+  Future<String?> getApiHash() async {
+    String? apiKey = VerseSetup.apiKey;
     if (apiKey == null) return null;
     String? apiSecretKey = VerseSetup.apiSecretKey;
     String? encrypterSecretKey = VerseSetup.apiEncrypterSecretKey;
     if (apiSecretKey == null || encrypterSecretKey == null) {
-      throw Exception('');
+      throw SecretKeysNullException();
     }
     ApiEncoder encoder = ApiEncoder(
       secretKey: apiSecretKey,

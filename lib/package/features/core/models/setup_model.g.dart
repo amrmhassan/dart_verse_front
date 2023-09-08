@@ -18,18 +18,15 @@ class SetupModelAdapter extends TypeAdapter<SetupModel> {
     };
     return SetupModel(
       baseUrl: fields[0] as String,
-      appId: fields[1] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SetupModel obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.baseUrl)
       ..writeByte(1)
-      ..write(obj.appId);
+      ..writeByte(0)
+      ..write(obj.baseUrl);
   }
 
   @override
