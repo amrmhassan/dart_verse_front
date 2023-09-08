@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/constants/setup_constants.dart';
 import 'package:frontend/package/errors/models/app_exceptions.dart';
@@ -17,26 +16,40 @@ late StreamController<VerseUser?> _userStreamController;
 const Duration _urlBaseConnectTimeoutDefault = Duration(seconds: 5);
 late Box _setUpBox;
 late SetupModel _setupModel;
+late String? _appApiKey;
+late String? _appApiSecretKey;
+late String? _appApiEncrypterSecretKey;
 
 class VerseSetup {
   final String baseUrl;
-  final String? appId;
   final bool checkServer;
+  final String? _apiKey;
+  final String? _apiSecretKey;
+  final String? _apiEncrypterSecretKey;
 
   final Duration _baseUrlConnectTimeout;
 
   VerseSetup({
     required this.baseUrl,
     this.checkServer = false,
-    this.appId,
+    String? apiKey,
+    String? apiEncrypterSecretKey,
+    String? apiSecretKey,
     Duration baseUrlConnectTimeout = _urlBaseConnectTimeoutDefault,
-  }) : _baseUrlConnectTimeout = baseUrlConnectTimeout;
+  })  : _apiSecretKey = apiSecretKey,
+        _apiEncrypterSecretKey = apiEncrypterSecretKey,
+        _baseUrlConnectTimeout = baseUrlConnectTimeout,
+        _apiKey = apiKey;
 
   Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
     await HiveInitiator().setup();
     _setUpBox = await HiveBox.setup;
-    _setupModel = SetupModel(baseUrl: baseUrl, appId: appId);
+    _setupModel = SetupModel(baseUrl: baseUrl);
+    _appApiKey = _apiKey;
+    _appApiEncrypterSecretKey = _apiEncrypterSecretKey;
+    _appApiSecretKey = _apiSecretKey;
+
     //? here ensure you initialize all dio stuff
 
     _initDio();
@@ -51,9 +64,6 @@ class VerseSetup {
   }
 
   void _initDio() async {
-    if (appId != null) {
-      dio.options.headers[HeaderFields.appId] = appId;
-    }
     dio.options.baseUrl = baseUrl;
   }
 
@@ -89,7 +99,6 @@ class VerseSetup {
 
     return VerseSetup(
       baseUrl: setUp.baseUrl,
-      appId: setUp.appId,
     );
   }
 
@@ -106,15 +115,13 @@ class VerseSetup {
     Map<String, String> headers, {
     VerseSetup? instance,
   }) {
-    VerseSetup verseSetup = instance ?? VerseSetup.instance;
-
-    if (verseSetup.appId != null) {
-      headers[HeaderFields.appId] = verseSetup.appId!;
-    }
     String? jwt = UserController(_setUpBox).userJWT();
 
     return AuthUtils.attachAuthHeader(jwt, headers);
   }
 
   static Box get setupBox => _setUpBox;
+  static String? get apiKey => _appApiKey;
+  static String? get apiSecretKey => _appApiSecretKey;
+  static String? get apiEncrypterSecretKey => _appApiEncrypterSecretKey;
 }

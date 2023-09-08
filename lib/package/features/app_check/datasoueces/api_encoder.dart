@@ -18,9 +18,10 @@ class ApiEncoder {
     _hmacHandler = HmacHandler(secretKey);
   }
 
-  String encoded(String api) {
-    String id = Uuid().v4();
-    String timestamp = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+  String encoded(String api, [DateTime? dateTime]) {
+    String id = const Uuid().v4();
+    String timestamp =
+        (dateTime ?? DateTime.now().toUtc()).millisecondsSinceEpoch.toString();
     String message = '$timestamp$api$id';
     String hmac = _hmacHandler.generateHmacSignature(message);
     Map<String, String> dataObj = {
