@@ -1,6 +1,7 @@
 class EndpointsConstants {
   // server
   static const String serverAlive = '/checkServerAlive';
+  static const String serverTime = '/getServerTime';
 
   // auth
   static const String login = '/login';

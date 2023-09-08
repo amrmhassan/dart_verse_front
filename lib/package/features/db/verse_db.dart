@@ -4,7 +4,6 @@ import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/errors/models/db_exceptions.dart';
 import 'package:frontend/package/features/db/db_connector.dart';
 import 'package:frontend/package/features/db/mongo_ref/coll_ref_mongo.dart';
-import '../core/verse_setup.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 String? _dbConnLink;
@@ -12,14 +11,12 @@ Db? _db;
 
 class VerseDb {
   static _VerseDbExecuter get instance {
-    var verseSetup = VerseSetup.instance;
-    return _VerseDbExecuter(verseSetup);
+    return const _VerseDbExecuter();
   }
 }
 
 class _VerseDbExecuter {
-  final VerseSetup _verseSetup;
-  const _VerseDbExecuter(this._verseSetup);
+  const _VerseDbExecuter();
 
   Db get db {
     if (_db == null) {
@@ -41,7 +38,7 @@ class _VerseDbExecuter {
   //? mongodb://localhost:27017
 
   Future<void> _getConnLink() async {
-    _dbConnLink = await DbConnector.getConnLink(_verseSetup);
+    _dbConnLink = await DbConnector.getConnLink();
   }
 
   Future<void> _connectDb() async {

@@ -15,14 +15,12 @@ import 'package:frontend/package/constants/runtime_variables.dart';
 
 class VerseStorage {
   static _VerseStorageExecuter get instance {
-    var verseSetup = VerseSetup.instance;
-    return _VerseStorageExecuter(verseSetup);
+    return const _VerseStorageExecuter();
   }
 }
 
 class _VerseStorageExecuter {
-  final VerseSetup _verseSetup;
-  const _VerseStorageExecuter(this._verseSetup);
+  const _VerseStorageExecuter();
 
   Future<String> putFile(
     File file, {
@@ -34,7 +32,7 @@ class _VerseStorageExecuter {
     if (!file.existsSync()) {
       throw FileNotFound(file.path);
     }
-    String url = _verseSetup.baseUrl + EndpointsConstants.uploadFile;
+    String url = EndpointsConstants.uploadFile;
 
     Map<String, String> headers = {};
 
@@ -86,7 +84,7 @@ class _VerseStorageExecuter {
       headers[HeaderFields.bucketName] = bucketName;
     }
     headers[HeaderFields.ref] = ref;
-    String url = _verseSetup.baseUrl + EndpointsConstants.deleteFile;
+    String url = EndpointsConstants.deleteFile;
 
     var res = await dio.delete(
       url,
@@ -116,8 +114,7 @@ class _VerseStorageExecuter {
         throw FileAlreadyDownloaded(downloadPath);
       }
     }
-    String url = _verseSetup.baseUrl +
-        EndpointsConstants.downloadFile(bucketName, fileRef);
+    String url = EndpointsConstants.downloadFile(bucketName, fileRef);
     Map<String, String> headers = {};
 
     headers = VerseSetup.attachAuthHeaders(headers);

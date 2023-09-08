@@ -22,6 +22,7 @@ class VerseSetup {
   final String baseUrl;
   final String? appId;
   final bool checkServer;
+
   final Duration _baseUrlConnectTimeout;
 
   VerseSetup({
@@ -53,6 +54,7 @@ class VerseSetup {
     if (appId != null) {
       dio.options.headers[HeaderFields.appId] = appId;
     }
+    dio.options.baseUrl = baseUrl;
   }
 
   Future<void> _validateBaseUrl() async {
@@ -67,7 +69,7 @@ class VerseSetup {
     if (!checkServer) return;
     try {
       await dio.get(
-        baseUrl + EndpointsConstants.serverAlive,
+        EndpointsConstants.serverAlive,
       );
       finished = true;
     } catch (e) {

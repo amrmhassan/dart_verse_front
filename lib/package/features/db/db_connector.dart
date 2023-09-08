@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:frontend/package/constants/body_fields.dart';
 import 'package:frontend/package/features/core/verse_setup.dart';
@@ -30,12 +28,12 @@ class DbConnector {
     return db;
   }
 
-  static Future<String> getConnLink(VerseSetup verseSetup) async {
-    String url = verseSetup.baseUrl + EndpointsConstants.getDbConnLink;
+  static Future<String> getConnLink() async {
+    String url = EndpointsConstants.getDbConnLink;
     Map<String, String> headers = {};
     headers = VerseSetup.attachAuthHeaders(headers);
     var res = await dio.get(url, options: Options(headers: headers));
-    var body = json.decode(res.data);
+    var body = res.data;
     String connLink = body[BodyFields.connLink];
     Uri baseUrl = Uri.parse(VerseSetup.instance.baseUrl);
     connLink = connLink.replaceAll('localhost', baseUrl.host);

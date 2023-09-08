@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/constants/body_fields.dart';
-import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/errors/models/auth_exception.dart';
 import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:frontend/package/features/auth/models/user_model.dart';
@@ -14,21 +13,19 @@ import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:frontend/package/features/endpoints/impl/default_auth_endpoints.dart';
 import 'package:frontend/package/features/endpoints/repo/auth_endpoint.dart';
 import 'package:frontend/package/features/utils/exception_transformer.dart';
+import 'package:frontend/package/utils/dio_error_trans.dart';
 
 class VerseAuth {
   static _VerseAuthExecuter get instance {
-    var verseSetup = VerseSetup.instance;
-    return _VerseAuthExecuter(verseSetup);
+    return _VerseAuthExecuter();
   }
 }
 
 class _VerseAuthExecuter {
-  final VerseSetup _verseSetup;
   late AuthEndpoints _authEndpoints;
   UserController get _userController => UserController(VerseSetup.setupBox);
 
-  _VerseAuthExecuter(
-    this._verseSetup, {
+  _VerseAuthExecuter({
     AuthEndpoints? authEndpoints,
   }) {
     _authEndpoints = authEndpoints ?? DefaultAuthEndpoints();
@@ -39,11 +36,8 @@ class _VerseAuthExecuter {
     required String password,
     Map<String, dynamic>? userData,
   }) async {
-    String url = '${_verseSetup.baseUrl}${_authEndpoints.register}';
-    Map<String, String> headers = {};
-    if (_verseSetup.appId != null) {
-      headers[HeaderFields.appId] = _verseSetup.appId!;
-    }
+    String url = _authEndpoints.register;
+
     Map<String, dynamic> body = {
       BodyFields.email: email,
       BodyFields.password: password,
@@ -54,11 +48,10 @@ class _VerseAuthExecuter {
     }
 
     // here i should send a register request to the server with custom endpoints
-    var response = await dio.post(
-      url,
-      options: Options(headers: headers),
-      data: json.encode(body),
-    );
+    var response = await DioErrorTrans.run(() => dio.post(
+          url,
+          data: json.encode(body),
+        ));
 
     return _afterAuth(response, email);
 
@@ -68,7 +61,7 @@ class _VerseAuthExecuter {
 
   Future<VerseUser> _afterAuth(Response response, String email) async {
     int? code = response.statusCode;
-    var resBody = json.decode(response.data);
+    var resBody = response.data;
     if (code != 200) {
       //? if not success then throw an error
       String? error = resBody['error'];
@@ -96,20 +89,16 @@ class _VerseAuthExecuter {
     required String email,
     required String password,
   }) async {
-    String url = '${_verseSetup.baseUrl}${_authEndpoints.login}';
-    Map<String, String> headers = {};
-    if (_verseSetup.appId != null) {
-      headers[HeaderFields.appId] = _verseSetup.appId!;
-    }
+    String url = _authEndpoints.login;
+
     Map<String, dynamic> body = {
       BodyFields.email: email,
       BodyFields.password: password,
     };
-    Response response = await dio.post(
-      url,
-      options: Options(headers: headers),
-      data: json.encode(body),
-    );
+    var response = await DioErrorTrans.run(() => dio.post(
+          url,
+          data: json.encode(body),
+        ));
 
     return _afterAuth(response, email);
   }
@@ -119,16 +108,13 @@ class _VerseAuthExecuter {
   }) async {
     if (logoutFromBackend) {
       Map<String, String> headers = {};
-      if (_verseSetup.appId != null) {
-        headers[HeaderFields.appId] = _verseSetup.appId!;
-      }
       String? jwt = _userController.userJWT();
       if (jwt == null) {
         throw JwtIsNullException();
       }
 
       headers = AuthUtils.attachAuthHeader(jwt, headers);
-      String url = '${_verseSetup.baseUrl}${_authEndpoints.logout}';
+      String url = _authEndpoints.logout;
       var res = await dio.post(url, options: Options(headers: headers));
       ExceptionTransformer.authException(res);
     }

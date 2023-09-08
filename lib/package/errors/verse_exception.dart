@@ -1,4 +1,4 @@
-abstract class VerseException implements Exception {
+class VerseException implements Exception {
   final String message;
   final String? code;
 
