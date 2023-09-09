@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/errors/models/storage_exceptions.dart';
-import 'package:frontend/package/features/core/verse_setup.dart';
 import 'package:frontend/package/features/endpoints/constants/endpoints_constants.dart';
 import 'package:frontend/package/features/storage/constants/storage_constants.dart';
 import 'package:frontend/package/features/storage/utils/upload_file_utils.dart';
@@ -56,7 +55,7 @@ class _VerseStorageExecuter {
       headers[HeaderFields.fileName] = fileName;
     }
 
-    headers = VerseSetup.attachAuthHeaders(headers);
+    // headers = VerseSetup.attachAuthHeaders(headers);
     var res = await dio.post(
       url,
       data: file.readAsBytesSync(),
@@ -79,7 +78,7 @@ class _VerseStorageExecuter {
   }) async {
     Map<String, String> headers = {};
 
-    headers = VerseSetup.attachAuthHeaders(headers);
+    // headers = VerseSetup.attachAuthHeaders(headers);
     if (bucketName != null) {
       headers[HeaderFields.bucketName] = bucketName;
     }
@@ -117,7 +116,7 @@ class _VerseStorageExecuter {
     String url = EndpointsConstants.downloadFile(bucketName, fileRef);
     Map<String, String> headers = {};
 
-    headers = VerseSetup.attachAuthHeaders(headers);
+    // headers = VerseSetup.attachAuthHeaders(headers);
     var res = await dio.get(
       url,
       options: Options(headers: headers),

@@ -31,7 +31,7 @@ class DbConnector {
   static Future<String> getConnLink() async {
     String url = EndpointsConstants.getDbConnLink;
     Map<String, String> headers = {};
-    headers = VerseSetup.attachAuthHeaders(headers);
+    // headers = VerseSetup.attachAuthHeaders(headers);
     var res = await dio.get(url, options: Options(headers: headers));
     var body = res.data;
     String connLink = body[BodyFields.connLink];

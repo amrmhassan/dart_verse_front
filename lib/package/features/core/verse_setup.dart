@@ -6,7 +6,6 @@ import 'package:frontend/package/constants/setup_constants.dart';
 import 'package:frontend/package/errors/models/app_exceptions.dart';
 import 'package:frontend/package/errors/verse_exception.dart';
 import 'package:frontend/package/features/app_check/app_check.dart';
-import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/package/features/auth/models/user_model.dart';
 import 'package:frontend/package/features/auth/user_controller.dart';
@@ -78,6 +77,12 @@ class VerseSetup {
         if (apiEncrypter != null) {
           options.headers[HeaderFields.apiHash] = apiEncrypter;
         }
+        String? jwt = UserController(_setUpBox).userJWT();
+
+        if (jwt != null) {
+          options.headers[HeaderFields.authorization] =
+              '${HeaderFields.bearer} $jwt';
+        }
         return handler.next(options);
       },
     ));
@@ -132,14 +137,11 @@ class VerseSetup {
       _userStreamController;
 
   /// this will attach app id and authorization headers
-  static Map<String, String> attachAuthHeaders(
-    Map<String, String> headers, {
-    VerseSetup? instance,
-  }) {
-    String? jwt = UserController(_setUpBox).userJWT();
+  // static Map<String, String> attachAuthHeaders(Map<String, String> headers) {
+  //   String? jwt = UserController(_setUpBox).userJWT();
 
-    return AuthUtils.attachAuthHeader(jwt, headers);
-  }
+  //   return AuthUtils.attachAuthHeader(jwt, headers);
+  // }
 
   static Box get setupBox => _setUpBox;
   static String? get apiKey => _appApiKey;
