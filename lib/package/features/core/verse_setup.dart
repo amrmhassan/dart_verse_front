@@ -4,6 +4,7 @@ import 'package:frontend/package/constants/header_fields.dart';
 import 'package:frontend/package/constants/runtime_variables.dart';
 import 'package:frontend/package/constants/setup_constants.dart';
 import 'package:frontend/package/errors/models/app_exceptions.dart';
+import 'package:frontend/package/errors/verse_exception.dart';
 import 'package:frontend/package/features/app_check/app_check.dart';
 import 'package:frontend/package/features/auth/auth_utils.dart';
 import 'package:flutter/material.dart';
@@ -68,16 +69,18 @@ class VerseSetup {
 
   void _initDio() async {
     dio.options.baseUrl = baseUrl;
-    String? apiEncrypter = await AppCheck.instance.getApiHash();
-
-    if (apiEncrypter != null) {
-      dio.interceptors.add(InterceptorsWrapper(
-        onRequest: (options, handler) {
-          options.headers[HeaderFields.apiHash] = apiEncrypter;
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        if (options.path == EndpointsConstants.serverTime) {
           return handler.next(options);
-        },
-      ));
-    }
+        }
+        String? apiEncrypter = await AppCheck.instance.getApiHash();
+        if (apiEncrypter != null) {
+          options.headers[HeaderFields.apiHash] = apiEncrypter;
+        }
+        return handler.next(options);
+      },
+    ));
   }
 
   Future<void> _validateBaseUrl() async {
@@ -95,6 +98,11 @@ class VerseSetup {
         EndpointsConstants.serverAlive,
       );
       finished = true;
+    } on DioException catch (e) {
+      var response = e.response;
+      String? message = response?.data?['error'];
+      String? code = response?.data?['code'];
+      throw VerseException(message ?? 'Unknown message', code);
     } catch (e) {
       throw BaseUrlException();
     }
