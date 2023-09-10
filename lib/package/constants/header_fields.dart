@@ -11,4 +11,5 @@ class HeaderFields {
   static const String onFileExist = 'onFileExist';
   // app check
   static const String apiHash = 'apiHash';
+  static const String apiKey = 'apiKey';
 }

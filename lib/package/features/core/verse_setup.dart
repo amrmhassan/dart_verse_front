@@ -34,7 +34,6 @@ class VerseSetup {
     required this.baseUrl,
     this.checkServer = false,
     String? apiKey,
-    String? apiEncrypterSecretKey,
     String? apiSecretKey,
     Duration baseUrlConnectTimeout = _urlBaseConnectTimeoutDefault,
   })  : _apiSecretKey = apiSecretKey,
@@ -72,6 +71,7 @@ class VerseSetup {
         String? apiEncrypter = await AppCheck.instance.getApiHash();
         if (apiEncrypter != null) {
           options.headers[HeaderFields.apiHash] = apiEncrypter;
+          options.headers[HeaderFields.apiKey] = apiKey;
         }
         String? jwt = UserController(_setUpBox).userJWT();
 
