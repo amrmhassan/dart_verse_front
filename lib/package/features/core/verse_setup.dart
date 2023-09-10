@@ -21,14 +21,12 @@ late Box _setUpBox;
 late SetupModel _setupModel;
 late String? _appApiKey;
 late String? _appApiSecretKey;
-late String? _appApiEncrypterSecretKey;
 
 class VerseSetup {
   final String baseUrl;
   final bool checkServer;
   final String? _apiKey;
   final String? _apiSecretKey;
-  final String? _apiEncrypterSecretKey;
 
   final Duration _baseUrlConnectTimeout;
 
@@ -40,7 +38,6 @@ class VerseSetup {
     String? apiSecretKey,
     Duration baseUrlConnectTimeout = _urlBaseConnectTimeoutDefault,
   })  : _apiSecretKey = apiSecretKey,
-        _apiEncrypterSecretKey = apiEncrypterSecretKey,
         _baseUrlConnectTimeout = baseUrlConnectTimeout,
         _apiKey = apiKey;
 
@@ -50,7 +47,6 @@ class VerseSetup {
     _setUpBox = await HiveBox.setup;
     _setupModel = SetupModel(baseUrl: baseUrl);
     _appApiKey = _apiKey;
-    _appApiEncrypterSecretKey = _apiEncrypterSecretKey;
     _appApiSecretKey = _apiSecretKey;
 
     //? here ensure you initialize all dio stuff
@@ -146,5 +142,4 @@ class VerseSetup {
   static Box get setupBox => _setUpBox;
   static String? get apiKey => _appApiKey;
   static String? get apiSecretKey => _appApiSecretKey;
-  static String? get apiEncrypterSecretKey => _appApiEncrypterSecretKey;
 }

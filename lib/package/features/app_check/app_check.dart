@@ -16,13 +16,12 @@ class _AppCheckExecuter {
     String? apiKey = VerseSetup.apiKey;
     if (apiKey == null) return null;
     String? apiSecretKey = VerseSetup.apiSecretKey;
-    String? encrypterSecretKey = VerseSetup.apiEncrypterSecretKey;
-    if (apiSecretKey == null || encrypterSecretKey == null) {
+    if (apiSecretKey == null) {
       throw SecretKeysNullException();
     }
     ApiEncoder encoder = ApiEncoder(
       secretKey: apiSecretKey,
-      encrypterSecretKey: encrypterSecretKey,
+      encrypterSecretKey: apiSecretKey,
     );
     DateTime dateTime = await VerseServices.instance.getServerTime();
     String encoded = encoder.encoded(apiKey, dateTime);
